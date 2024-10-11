@@ -1,0 +1,20 @@
+{
+    "name": "azelea/templater",
+    "description": "The templater for the azelea php framework",
+    "type": "library",
+    "license": "none",
+    "autoload": {
+        "psr-4": {
+            "Azelea\\Templater\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "JustKurayy"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        
+    }
+}
