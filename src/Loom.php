@@ -54,6 +54,9 @@ class Loom
         // Replace @yield
         $content = preg_replace('/@yield\s*\(\s*([^()]+)\s*\)/', '<?php echo $1; ?>', $content);
 
+        // Replace @asset
+        $content = preg_replace('/@asset\(\s*\'([^\"]+)\'\s*\)/', '<?php echo "/assets/$1"; ?>', $content);
+
         // Replace @class
         $content = preg_replace_callback('/@class\(\s*\'?(\w+)\'?\s*\)->(\w+)\s*\(\s*(.+?)\s*\)/', function ($matches) {
             $className = trim($matches[1]);
