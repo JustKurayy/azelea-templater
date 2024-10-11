@@ -5,10 +5,8 @@ This templater library is for the core of the lightweight PHP framework named Az
 
 ### How do I run this?
 This repo is for the composer package, which you can install 
-with 
-```powershell
-composer require azelea/templater
-```.
+with ```composer require azelea/templater```.
+
 You are not required to use the Azelea Framework to use the templater.
 There are two things you need to do to load this.
  1. You need to create the Loom class and call the render function
