@@ -2,19 +2,21 @@
 
 namespace Azelea\Templater;
 
-class Loom
-{
-    protected $variables = [];
+use Locale;
 
-    public function __construct(array $variables)
-    {
+class Loom {
+    protected $variables = [];
+    private $locales;
+
+    public function __construct(array $variables) {
         $this->variables = $variables;
+        $this->locales = new Locales();
+        $this->locales->chooseLanguage("en");
     }
 
-    public function render(string $template)
-    {
-        // Check if the template file exists
-        $templatePath = "../src/pages/" . $template;
+    public function render(string $template) {
+        $dir = substr(dirname(__DIR__), 0, strpos(dirname(__DIR__), "\\vendor\\"));
+        $templatePath = $dir . "/src/pages/" . $template;
         if (!file_exists($templatePath)) {
             throw new \Exception("Template file not found: $templatePath");
         }
@@ -33,8 +35,7 @@ class Loom
         echo ob_get_clean();
     }
 
-    public function processDirectives(string $content): string
-    {
+    public function processDirectives(string $content): string {
         // Replace @foreach
         $content = preg_replace_callback('/@foreach\s*\(\s*\$(\w+)\s+as\s+\$(\w+)\s*\)/', function ($matches) {
             $array = $matches[1];
@@ -56,6 +57,13 @@ class Loom
 
         // Replace @asset
         $content = preg_replace('/@asset\(\s*\'([^\"]+)\'\s*\)/', '<?php echo "/assets/$1"; ?>', $content);
+
+        // Replace @lang
+        $content = preg_replace_callback('/@lang\(\s*\'([^\']+)\'\s*\)/', function ($matches) {
+            $key = trim($matches[1]);
+            $locales = $this->locales->getLocale($key);
+            return "<?php echo '$locales'; ?>"; // Remove quotes around $params to pass as variables
+        }, $content);
 
         // Replace @class
         $content = preg_replace_callback('/@class\(\s*\'?(\w+)\'?\s*\)->(\w+)\s*\(\s*(.+?)\s*\)/', function ($matches) {
