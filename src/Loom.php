@@ -20,16 +20,11 @@ class Loom {
     public function render(string $template) {
         $dir = substr(dirname(__DIR__), 0, strpos(dirname(__DIR__), "\\vendor\\"));
         $templatePath = $dir . "/src/pages/" . $template;
-        if (!file_exists($templatePath)) {
-            throw new \Exception("Template file not found: $templatePath");
-        }
+        if (!file_exists($templatePath)) throw new \Exception("Template file not found: $templatePath");
+        if (!str_contains($template, ".loom.")) throw new \Exception("File is not a Loom template");
 
         extract($this->variables);
-
-        // Load the template file content
         $content = file_get_contents($templatePath);
-
-        // Process the directives in the content
         $content = $this->processDirectives($content);
 
         // Start output buffering and evaluate the PHP
