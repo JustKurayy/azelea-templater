@@ -63,6 +63,12 @@ class Loom {
 
         // Replace @yield
         $content = preg_replace('/@yield\s*\(\s*([^()]+)\s*\)/', '<?php echo $1; ?>', $content);
+        
+        // Replace @flashes
+        $content = preg_replace_callback('/@flashes\s*\(\s*([^()]+)\s*,\s*\$([^()]+)\s*\)/', function ($matches) {
+            // \Azelea\Core\Core::dd($matches);
+            return '<?php echo "'.htmlspecialchars($_SESSION["flashes"][0][0], ENT_QUOTES, 'UTF-8').'"; ?>';
+        }, $content);
 
         // Replace @asset
         $content = preg_replace('/@asset\s*\(\s*\'([^\"]+)\'\s*\)/', '<?php echo "/assets/$1"; ?>', $content);
