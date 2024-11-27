@@ -80,7 +80,22 @@ class Loom
         $content = preg_replace_callback('/@lang\s*\(\s*\'([^\']+)\'\s*\)/', function ($matches) {
             $key = trim($matches[1]);
             $locales = $this->locales->getLocale($key);
-            return "<?php echo '$locales'; ?>"; // Remove quotes around $params to pass as variables
+            return "<?php echo '$locales'; ?>";
+        }, $content);
+
+        // Replaces @block with the parsed json 
+        $content = preg_replace_callback('/@block\s*\(\s*\'([^\']+)\'\s*\)/', function ($matches) {
+            $key = trim($matches[1]);
+            $parser = new \Azelea\Core\Standard\Converter();
+            return '<?php echo "'. $parser->addBlock($key, true)  .'"; ?>';
+        }, $content);
+
+        // Temp solution for include
+        $content = preg_replace_callback('/@include\s*\(\s*\'([^\']+)\'\s*\)/', function ($matches) {
+            $key = trim($matches[1]);
+            if (!str_contains($key, ".loom.php")) throw new \Exception("File is not a Loom template");
+            $file = file_get_contents($this->dir . '/src/pages/' . $key); // Grabs the base file from the extend
+            return "<?php echo '$file'; ?>";
         }, $content);
 
         // Replace @flashes
@@ -93,7 +108,7 @@ class Loom
             $className = trim($matches[1]);
             $method = trim($matches[2]);
             $params = trim($matches[3]);
-            return "<?php echo \$$className->$method($params); ?>"; // Remove quotes around $params to pass as variables
+            return "<?php echo \$$className->$method($params); ?>";
         }, $content);
 
         $content = preg_replace_callback('/@extends\s*\(\s*\'([^\']+)\'\s*\)/', function ($matches) {
